@@ -8,7 +8,7 @@ PSIA uses a multi-agent architecture to:
 1. **Fetch** user portfolio holdings
 2. **Collect** relevant financial news articles
 3. **Analyze** sentiment using FinBERT (financial BERT model)
-4. **Summarize** findings using LLM (Claude/GPT-4)
+4. **Summarize** findings using LLM (meta-llama)
 5. **Assess** portfolio risk levels
 6. **Deliver** comprehensive email reports
 
