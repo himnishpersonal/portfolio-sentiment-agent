@@ -332,6 +332,20 @@ Validate sentiment model accuracy:
 python scripts/validate_sentiment.py labeled_headlines.txt
 ```
 
+## 📧 Example Report
+
+Here's what the automated email report looks like:
+
+![Portfolio Sentiment Report Example](assets/example-report.png)
+
+**Report Includes:**
+- 📊 **Portfolio Overview Table** - All stocks with weights, sentiment, and summaries
+- 🎨 **Color-Coded Risk Levels** - GREEN (Low), YELLOW (Medium), RED (High)
+- 🤖 **AI-Generated Summaries** - Concise analysis for each holding
+- 📈 **Individual Stock Sentiment** - FinBERT classification with confidence
+- 🔗 **Source Links** - Direct links to news articles analyzed
+- ⚠️ **Portfolio Risk Badge** - Overall risk assessment at the top
+
 ## 🔄 How It Works
 
 ```mermaid
