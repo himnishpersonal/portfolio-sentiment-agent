@@ -1,0 +1,11 @@
+# Airflow requirements for Google Cloud Composer
+# These are in addition to the main requirements.txt
+
+# Airflow dependencies (managed by Composer, but listed for reference)
+# apache-airflow==2.7.0
+# apache-airflow-providers-google==8.10.0
+
+# Additional dependencies that might be needed
+google-cloud-storage>=2.10.0
+google-cloud-secret-manager>=2.16.0
+

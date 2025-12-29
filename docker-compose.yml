@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: portfolio_user
+      POSTGRES_PASSWORD: portfolio_pass
+      POSTGRES_DB: portfolio_sentiment
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U portfolio_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  streamlit:
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8501:8501"
+    environment:
+      DATABASE_URL: postgresql://portfolio_user:portfolio_pass@postgres:5432/portfolio_sentiment
+      NEWSAPI_KEY: ${NEWSAPI_KEY}
+      FINNHUB_KEY: ${FINNHUB_KEY}
+      SENDGRID_API_KEY: ${SENDGRID_API_KEY}
+      LLM_PROVIDER: ${LLM_PROVIDER:-anthropic}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      EMAIL_FROM: ${EMAIL_FROM}
+      EMAIL_FROM_NAME: ${EMAIL_FROM_NAME:-Portfolio Sentiment Agent}
+    volumes:
+      - ./logs:/app/logs
+    command: streamlit run app/streamlit_app.py --server.port 8501 --server.address 0.0.0.0
+
+  pipeline:
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://portfolio_user:portfolio_pass@postgres:5432/portfolio_sentiment
+      NEWSAPI_KEY: ${NEWSAPI_KEY}
+      FINNHUB_KEY: ${FINNHUB_KEY}
+      SENDGRID_API_KEY: ${SENDGRID_API_KEY}
+      LLM_PROVIDER: ${LLM_PROVIDER:-anthropic}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      EMAIL_FROM: ${EMAIL_FROM}
+      EMAIL_FROM_NAME: ${EMAIL_FROM_NAME:-Portfolio Sentiment Agent}
+    volumes:
+      - ./logs:/app/logs
+    command: python scripts/run_pipeline.py
+    profiles:
+      - pipeline  # Only run when explicitly requested
+
+volumes:
+  postgres_data:
