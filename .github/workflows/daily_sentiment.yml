@@ -24,19 +24,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run database migrations
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: |
-          # Initialize database schema if needed
-          python -c "
-          from db.connection import db_manager
-          from db.models import Base
-          from sqlalchemy import create_engine
-          engine = create_engine('${{ secrets.DATABASE_URL }}')
-          Base.metadata.create_all(engine)
-          "
-
       - name: Run sentiment pipeline
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
