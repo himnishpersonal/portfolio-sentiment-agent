@@ -18,34 +18,38 @@ setup_logging()
 def main():
     """Run pipeline for all users."""
     try:
-        # Get all users
+        # Get all users - extract data while session is open
         with db_manager.get_session() as session:
             users = session.query(User).all()
+            # Extract user data before session closes
+            user_data = [{"id": user.id, "email": user.email} for user in users]
 
-        if not users:
+        if not user_data:
             print("No users found")
             return
 
-        print(f"Running pipeline for {len(users)} users...")
+        print(f"Running pipeline for {len(user_data)} users...")
 
         orchestrator = Orchestrator()
         success_count = 0
         failure_count = 0
 
-        for user in users:
+        for user_info in user_data:
             try:
-                print(f"\nProcessing user {user.id} ({user.email})...")
-                result = orchestrator.run(user.id)
+                user_id = user_info["id"]
+                user_email = user_info["email"]
+                print(f"\nProcessing user {user_id} ({user_email})...")
+                result = orchestrator.run(user_id)
 
                 if result.get("email_sent"):
-                    print(f"✓ Successfully processed user {user.id}")
+                    print(f"✓ Successfully processed user {user_id}")
                     success_count += 1
                 else:
-                    print(f"⚠ User {user.id} processed but email may not have been sent")
+                    print(f"⚠ User {user_id} processed but email may not have been sent")
                     failure_count += 1
 
             except Exception as e:
-                print(f"✗ Failed to process user {user.id}: {e}")
+                print(f"✗ Failed to process user {user_id}: {e}")
                 failure_count += 1
 
         print(f"\n{'='*50}")
