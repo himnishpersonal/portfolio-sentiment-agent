@@ -59,15 +59,3 @@ jobs:
           path: logs/
           retention-days: 7
 
-      - name: Notify on failure
-        if: failure()
-        uses: actions/github-script@v6
-        with:
-          script: |
-            github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: 'Portfolio Sentiment Pipeline Failed',
-              body: 'The daily sentiment analysis pipeline failed. Please check the logs.'
-            })
-
